@@ -4,7 +4,7 @@ import commonjs from 'rollup-plugin-commonjs';
 import nodeResolve from 'rollup-plugin-node-resolve';
 
 export default {
-  entry: config.main,
+  entry: 'src/CanvasCurve.js',
   format: config.moduleFormat,
   moduleName: config.moduleName,
   sourceMap: true,
