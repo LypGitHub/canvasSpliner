@@ -1,13 +1,15 @@
 {
-  "name": "CanvasSpliner",
+  "name": "CanvasCurve",
   "version": "0.1.0",
   "description": "A spline widget",
-  "author": "Jonathan Lurie",
+  "author": "moocher",
   "license": "MIT",
-  "homepage": "https://github.com/jonathanlurie/canvasSpliner",
-  "main": "src/CanvasSpliner.js",
-  "repository": "jonathanlurie/canvasSpliner",
-  "moduleName": "CanvasSpliner",
+  "files": [
+    "lib/CanvasCurve.js",
+    "readme.md"
+  ],
+  "main": "src/CanvasCurve.js",
+  "moduleName": "CanvasCurve",
   "moduleFormat": "es",
   "moduleBuildDir": "lib",
   "scripts": {

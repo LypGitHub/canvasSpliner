@@ -15,10 +15,10 @@ import { PointCollection } from './PointCollection.js'
 *   - "releasePoint" called everytime the pointers is released after moving a point, with argument x and y normalized arrays
 *   - "pointAdded"
 */
-class CanvasSpliner {
+class CanvasCurve {
 
   /**
-  * @param {Object} parentContainer - can be a String: the ID of the parent DIV, or can be directly the DOM element that will host the CanvasSpliner
+  * @param {Object} parentContainer - can be a String: the ID of the parent DIV, or can be directly the DOM element that will host the CanvasCurve
   * @param {Object} options
   * example:
   *  {
@@ -41,8 +41,8 @@ class CanvasSpliner {
   *   },
   *   
   * }
-  * @param {Number} width - width of the canvas where CanvasSpliner draws 
-  * @param {Number} height - height of the canvas where CanvasSpliner draws
+  * @param {Number} width - width of the canvas where CanvasCurve draws 
+  * @param {Number} height - height of the canvas where CanvasCurve draws
   * @param {String} splineType - "natural" or "monotonic"
   */
   constructor(parentContainer, options){
@@ -180,7 +180,7 @@ class CanvasSpliner {
 
   
   /**
-  * Get an array of all the x coordinates that CanvasSpliner computed an interpolation of.
+  * Get an array of all the x coordinates that CanvasCurve computed an interpolation of.
   * See getYSeriesInterpolated to get the corresponding interpolated values.
   * @return {Array} of x values with regular interval in [0, 1]
   */
@@ -748,8 +748,8 @@ class CanvasSpliner {
   }
 
 
-} /* END of class CanvasSpliner */
+} /* END of class CanvasCurve */
 
-window.CanvasSpliner = CanvasSpliner;
-export default CanvasSpliner;
+window.CanvasCurve = CanvasCurve;
+export default CanvasCurve;
 // Note: we chose not to export PointCollection
