@@ -69,7 +69,7 @@
     </style>
 
     <!--<script src="dist/CanvasSpliner.min.js"></script>-->
-    <script src="dist/CanvasSpliner.js"></script>
+    <script src="src/CanvasSpliner.js"></script>
 
   </head>
   <body>
@@ -101,7 +101,10 @@
     // 500 : the width in pixel
     // 500 : the height in pixel
     // "monotonic" : the type of cubic spline, could be "natural"
-    var cs = new CanvasSpliner.CanvasSpliner("parent", 500, 500);
+    var cs = new CanvasSpliner("parent", {
+      width: 500,
+      height: 500,
+    });
     
     // also works when specifying directly the DOM object
     //var cs = new CanvasSpliner.CanvasSpliner(document.getElementById( "parent" ), 500, 500);
@@ -118,10 +121,8 @@
 
 
     //cs.add( {x:0, y: 0 , xLocked: true, yLocked: true, safe: true} );
-    cs.add( {x:0.1, y: 0.4} );
-    cs.add( {x:0.3, y: 0.45} );
-    cs.add( {x:0.6, y: 0.8} );
-    cs.add( {x:1, y: 0.6 , xLocked: true, safe: true} );
+    cs.add( {x: 14 / 500 , y: 14 / 500 } );
+    cs.add( {x: 486 / 500, y: 486 / 500} );
 
     // define the type of interpolation
     //cs.setSplineType("monotonic")
