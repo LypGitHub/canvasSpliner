@@ -45,9 +45,10 @@ class CanvasCurve {
   * @param {Number} height - height of the canvas where CanvasCurve draws
   * @param {String} splineType - "natural" or "monotonic"
   */
-  constructor(parentContainer, options){
+  constructor(options){
     // some styling
     const {
+      canvas,
       width,
       height,
       hasBorder = false,
@@ -59,6 +60,7 @@ class CanvasCurve {
       textColor = 'rgba(0, 0, 0, 0.6)',
       controlPointRadius = 14,
       backgroundColor = false,
+      drawControl = false
     } = options;
     // borders of the canvas element
     this._borderStyle = borderStyle || {
@@ -67,6 +69,7 @@ class CanvasCurve {
     }
 
     this._hasBorder = hasBorder;
+    this._drawControl = drawControl;
 
     // radius of the control points
     this._controlPointRadius = controlPointRadius;
@@ -108,21 +111,8 @@ class CanvasCurve {
 
     this._screenRatio = window.devicePixelRatio;
 
-    var parentElem = null;
-    
-    if (typeof parentContainer === 'string' || parentContainer instanceof String){
-      parentElem = document.getElementById( parentContainer );
-    }else{
-      parentElem = parentContainer;
-    }
-    
-    
-    // abort if parent div does not exist
-    if(!parentElem)
-      return;
-
     // creating the canvas
-    this._canvas = document.createElement('canvas');
+    this._canvas = canvas;
     this._canvas.width  = width;
     this._canvas.height = height;
     this._canvas.setAttribute("tabIndex", 1);
@@ -132,9 +122,6 @@ class CanvasCurve {
     this._canvas.onselectstart = function () { return false; }
     this._width = width;
     this._height = height;
-
-    // adding the canvas to the parent div
-    parentElem.appendChild(this._canvas);
 
     this._ctx = this._canvas.getContext("2d");
     //this._ctx.scale( 1.1, 1.1)
@@ -175,6 +162,11 @@ class CanvasCurve {
       pointAdded: null
     };
     
+    this.draw();
+  }
+
+  setControl(val) {
+    this._drawControl = val;
     this.draw();
   }
 
@@ -356,7 +348,7 @@ class CanvasCurve {
       var grabbedPoint = this._pointCollection.getPoint( this._pointSelectIndex );
       this._drawCoordinates(
         Math.round((grabbedPoint.x / this._width) * 255),
-        Math.round((grabbedPoint.y/ this._height) * 255),
+        Math.round((grabbedPoint.y / this._height) * 255),
         grabbedPoint
       );
       if(this._onEvents.movePoint)
@@ -670,7 +662,7 @@ class CanvasCurve {
     }
 
     // drawing the control points
-    if( control ){
+    if( control && this._drawControl ){
       // control points
       for(var i=0; i<xSeries.length; i++){
         this._ctx.beginPath();

@@ -1,6 +1,6 @@
 {
   "name": "canvas-curve",
-  "version": "0.1.1",
+  "version": "0.1.6",
   "description": "A spline widget",
   "author": "moocher",
   "license": "MIT",
@@ -8,7 +8,7 @@
     "lib",
     "readme.md"
   ],
-  "main": "lib/CanvasCurve.js",
+  "main": "lib/canvas-curve.js",
   "moduleName": "CanvasCurve",
   "moduleFormat": "es",
   "moduleBuildDir": "lib",
