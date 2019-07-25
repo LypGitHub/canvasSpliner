@@ -58,7 +58,7 @@ class CanvasCurve {
       controlPointColor,
       gridColor,
       textColor = 'rgba(0, 0, 0, 0.6)',
-      controlPointRadius = 14,
+      controlPointRadius = 10,
       backgroundColor = false,
       drawControl = false
     } = options;
@@ -363,11 +363,17 @@ class CanvasCurve {
   _onCanvasMouseDown(evt){
     //console.log( 'down ');
     this._mouseDown = true;
+    this._canvas.focus();
 
     if( this._pointHoveredIndex != -1 ){
       //console.log("grabing a point");
       this._pointGrabbedIndex = this._pointHoveredIndex
       this._pointSelectIndex = this._pointHoveredIndex;
+    }
+    else {
+      var index = this.add( {x: this._mouse.x / this._width, y: this._mouse.y / this._height} );
+      this._pointHoveredIndex = index;
+      this._pointSelectIndex = index;
     }
   }
 
@@ -397,16 +403,11 @@ class CanvasCurve {
     //console.log("dbclick");
     this._canvas.focus();
 
-    if(this._pointHoveredIndex == -1 ){
-      var index = this.add( {x: this._mouse.x / this._width, y: this._mouse.y / this._height} );
-      this._pointHoveredIndex = index;
-      this._pointSelectIndex = index;
-    }else{
+    if(this._pointHoveredIndex !== -1 ){
       this.remove( this._pointHoveredIndex );
       this._pointHoveredIndex = -1;
       this._pointGrabbedIndex = -1;
     }
-
   }
 
 

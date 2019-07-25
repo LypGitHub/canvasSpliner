@@ -69,7 +69,7 @@
     </style>
 
     <!--<script src="dist/CanvasSpliner.min.js"></script>-->
-    <script src="src/CanvasSpliner.js"></script>
+    <script src="lib/canvas-curve.js"></script>
 
   </head>
   <body>
@@ -87,7 +87,7 @@
         </ul>
       </p>
       
-      <div id="parent"></div>
+      <div id="parent"><canvas id="canvas"></canvas></div>
     
 
     
@@ -101,7 +101,8 @@
     // 500 : the width in pixel
     // 500 : the height in pixel
     // "monotonic" : the type of cubic spline, could be "natural"
-    var cs = new CanvasSpliner("parent", {
+    var cs = new CanvasCurve({
+      canvas: document.getElementById('canvas'),
       width: 500,
       height: 500,
     });
