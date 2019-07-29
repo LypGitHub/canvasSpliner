@@ -477,11 +477,15 @@ class CanvasCurve {
     if("x" in pt && "y" in pt){
       pt.x *= this._width;
       pt.y *= this._height;
-      pt.value = {
-        x: Math.round(((pt.x - this._controlPointRadius) / (this._width - 2 * this._controlPointRadius)) * this._baseValue),
-        y: Math.round(((pt.y - this._controlPointRadius) / (this._height - 2 * this._controlPointRadius)) * this._baseValue),
+      pt.x = Math.min(Math.max(pt.x, this._controlPointRadius), this._width - this._controlPointRadius);
+      pt.y = Math.min(Math.max(pt.y, this._controlPointRadius), this._height - this._controlPointRadius);
+
+      index = this._pointCollection.add( pt, this._controlPointRadius);
+      const point = this._pointCollection.getPoint(index);
+      point.value = {
+        x: Math.round(((point.x - this._controlPointRadius) / (this._width - 2 * this._controlPointRadius)) * this._baseValue),
+        y: Math.round(((point.y - this._controlPointRadius) / (this._height - 2 * this._controlPointRadius)) * this._baseValue),
       };
-      index = this._pointCollection.add( pt );
     }
 
     if( draw ){
