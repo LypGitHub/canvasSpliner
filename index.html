@@ -40,7 +40,7 @@
         color: #01abf1;
         transition: all 0.2s;
       }
-      
+
       a:hover {
         color: #9901f1;
       }
@@ -61,15 +61,18 @@
       #parent {
         width: 500px;
         height: 500px;
-        margin-top: 50px;
+        margin-top: 20px;
         margin-left: 100px;
         margin-right: 100px;
       }
 
+      #canvas {
+          background: goldenrod;
+      }
     </style>
 
-    <!--<script src="dist/CanvasSpliner.min.js"></script>-->
-    <script src="lib/canvas-curve.js"></script>
+    <!--<script src="dist/canvas-curve.min.js"></script>-->
+    <script src="lib/canvas-curve.js" type="module" onload="init()"></script>
 
   </head>
   <body>
@@ -86,78 +89,93 @@
           <li><a href="https://github.com/jonathanlurie/canvasSpliner" target="_blank">Fork it on Github</a></li>
         </ul>
       </p>
-      
-      <div id="parent"><canvas id="canvas"></canvas></div>
-    
 
-    
+      <div id="parent"><canvas id="canvas"></canvas></div>
+
+
+
     </div>
 
-    
+
 
     <script>
 
-    // "parent" : the parent DIV ID
-    // 500 : the width in pixel
-    // 500 : the height in pixel
-    // "monotonic" : the type of cubic spline, could be "natural"
-    var cs = new CanvasCurve({
-      canvas: document.getElementById('canvas'),
-      width: 500,
-      height: 500,
-    });
-    
-    // also works when specifying directly the DOM object
-    //var cs = new CanvasSpliner.CanvasSpliner(document.getElementById( "parent" ), 500, 500);
-    
-    
-    /*
+        function init() {
+            // "parent" : the parent DIV ID
+            // 500 : the width in pixel
+            // 500 : the height in pixel
+            // "monotonic" : the type of cubic spline, could be "natural"
+            var options = {
+                canvas: document.getElementById('canvas'),
+                width: 500,
+                height: 500,
+                textColor: 'black',
+                drawControl: true,
+                controlPointColor: {
+                    idle: 'black',
+                    hovered: 'black',
+                    grabbed: 'black'
+                },
+                curveColor: {
+                    idle: '#fff000',
+                    moving: '#fff000'
+                },
+            };
+            window.cs = new CanvasCurve(options);
+
+            // also works when specifying directly the DOM object
+            //var cs = new CanvasSpliner.CanvasSpliner(document.getElementById( "parent" ), 500, 500);
+
+
+            /*
     for each point we have:
       x: its position on x axis
       y: its position on y axis
       xLocked: cannot be dragged along x axis when true
       yLocked: cannot be dragged along y axis when true
       safe: cannot be deleted when hovering and pressin "d"
-    */
+             */
 
 
-    //cs.add( {x:0, y: 0 , xLocked: true, yLocked: true, safe: true} );
-    cs.add( {x: 14 / 500 , y: 14 / 500 } );
-    cs.add( {x: 486 / 500, y: 486 / 500} );
+            //cs.add( {x:0, y: 0 , xLocked: true, yLocked: true, safe: true} );
+            cs.add( {x: 14 / 500 , y: 14 / 500 } );
+            cs.add( {x: 486 / 500, y: 486 / 500} );
 
-    // define the type of interpolation
-    //cs.setSplineType("monotonic")
-    //cs.setSplineType("natural")
+            // define the type of interpolation
+            //cs.setSplineType("monotonic")
+            //cs.setSplineType("natural")
 
-    // Define the step of the grid at the background
-    cs.setGridStep( 1/3 );
+            // Define the step of the grid at the background
+            cs.setGridStep( 1/3 );
 
 
-    var interpolatedVal = cs.getValue( 0.33 )
-    console.log( interpolatedVal );
+            var interpolatedVal = cs.getValue( 0.33 )
+            console.log( interpolatedVal );
 
-    // defining some events (optional) ************************
-    
-    // called while moving a point
-    cs.on("movePoint", function( csObj ){
-      console.log("moving...");
-    })
-    
-    // called when releasing the mouse after having clicked on a point
-    cs.on("releasePoint", function( csObj ){
-      console.log("released point");
-    })
-    
-    // called when a point is added
-    cs.on("pointAdded", function( csObj ){
-      console.log("new point!");
-    })
-    
-    // called when a point is removed
-    cs.on("pointRemoved", function( csObj ){
-      console.log("point removed.");
-    })
-    
+            // defining some events (optional) ************************
+
+            // called while moving a point
+            cs.on("movePoint", function( csObj ){
+                console.log("moving...");
+            })
+
+            // called when releasing the mouse after having clicked on a point
+            cs.on("releasePoint", function( csObj ){
+                console.log("released point");
+            })
+
+            // called when a point is added
+            cs.on("pointAdded", function( csObj ){
+                console.log("new point!");
+            })
+
+            // called when a point is removed
+            cs.on("pointRemoved", function( csObj ){
+                console.log("point removed.");
+            })
+
+        }
+
 
 
 

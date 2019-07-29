@@ -39,9 +39,9 @@ class CanvasCurve {
   *     hovered: "rgba(0, 0, 255, 0.5)",
   *     grabbed: "rgba(0, 200, 0, 0.5)"
   *   },
-  *   
+  *
   * }
-  * @param {Number} width - width of the canvas where CanvasCurve draws 
+  * @param {Number} width - width of the canvas where CanvasCurve draws
   * @param {Number} height - height of the canvas where CanvasCurve draws
   * @param {String} splineType - "natural" or "monotonic"
   */
@@ -60,7 +60,9 @@ class CanvasCurve {
       textColor = 'rgba(0, 0, 0, 0.6)',
       controlPointRadius = 10,
       backgroundColor = false,
-      drawControl = false
+      drawControl = true,
+      baseValue = 255,
+      fontFamily = 'Heiti',
     } = options;
     // borders of the canvas element
     this._borderStyle = borderStyle || {
@@ -86,19 +88,19 @@ class CanvasCurve {
       idle: 'black',
       moving: 'black'
     }
-    
+
     // color of the grid
     this._gridColor = gridColor;
-    
+
     // color of the text
     this._textColor = textColor;
 
     // thickness of the curve
     this._curveThickness = 1;
-    
+
     // color of the background
     this._backgroundColor = backgroundColor;
-    
+
 
     this._mouse = null;
     this._pointHoveredIndex = -1; // index of the grabbed point. -1 if none
@@ -146,6 +148,8 @@ class CanvasCurve {
 
     // the point collection
     this._pointCollection = new PointCollection();
+    const offset = this._controlPointRadius;
+    this._offset = offset;
     this._pointCollection.setBoundary("max", "x", width);
     this._pointCollection.setBoundary("max", "y", height);
 
@@ -155,13 +159,15 @@ class CanvasCurve {
 
     this._gridStep = 1/3;
 
+    this._baseValue = baseValue;
+
     // events
     this._onEvents = {
       movePoint: null,
       releasePoint: null,
       pointAdded: null
     };
-    
+
     this.draw();
   }
 
@@ -170,7 +176,7 @@ class CanvasCurve {
     this.draw();
   }
 
-  
+
   /**
   * Get an array of all the x coordinates that CanvasCurve computed an interpolation of.
   * See getYSeriesInterpolated to get the corresponding interpolated values.
@@ -179,8 +185,8 @@ class CanvasCurve {
   getXSeriesInterpolated(){
     return this._xSeriesInterpolated;
   }
-  
-  
+
+
   /**
   * Get all the interpolated values for each x given by getXSeriesInterpolated.
   * @return {Array} of interpolated y
@@ -188,7 +194,7 @@ class CanvasCurve {
   getYSeriesInterpolated(){
     return this._ySeriesInterpolated;
   }
-  
+
   /**
   * Change the radius of the control points
   * @param {Number} r - the radius in pixel
@@ -196,8 +202,8 @@ class CanvasCurve {
   setControlPointRadius( r ){
     this._controlPointRadius = r;
   }
-  
-  
+
+
   /**
   * Set the color of the control point in a specific state
   * @param {String} state - must be one of: "idle", "hovered" or "grabbed"
@@ -206,7 +212,7 @@ class CanvasCurve {
   setControlPointColor( state, color ){
     this._controlPointColor[ state ] = color;
   }
-  
+
   /**
   * Set the color of the curve in a specific state
   * @param {String} state - must be one of: "idle" or "moving"
@@ -238,8 +244,8 @@ class CanvasCurve {
 
     this.draw();
   }
-  
-  
+
+
   /**
   * Set the color of the text
   * @param {String} color - must be css style best is of form "rgba(244, 66, 167, 0.5)"
@@ -247,8 +253,8 @@ class CanvasCurve {
   setTextColor( color ){
     this._textColor = color;
   }
-  
-  
+
+
   /**
   * Define the thickness of the curve
   * @param {Number} t - thickness in pixel
@@ -257,16 +263,16 @@ class CanvasCurve {
     this._curveThickness = t;
   }
 
-  
+
   /**
   * Define the canvas background color
-  * @param {String} color - must be css style best is of form "rgba(244, 66, 167, 0.5)" 
+  * @param {String} color - must be css style best is of form "rgba(244, 66, 167, 0.5)"
   * Can allso be null/0/false to leave a blank background
   */
   setBackgroundColor( color ){
     this._backgroundColor = color;
   }
-  
+
 
   /**
   * @param {String} splineType - "natural" or "monotonic"
@@ -285,11 +291,12 @@ class CanvasCurve {
   * Refresh the position of the pointer we store internally (relative to the canvas)
   */
   _updateMousePosition(evt) {
+    // TODO: perf optimize
     var rect = this._canvas.getBoundingClientRect();
 
     this._mouse = {
       x: evt.clientX - rect.left,
-      y: this._height - (evt.clientY - rect.top)
+      y: this._canvas.height - (evt.clientY - rect.top),
     }
   }
 
@@ -304,7 +311,7 @@ class CanvasCurve {
 
     // check what control point is the closest from the pointer position
     var closestPointInfo = this._pointCollection.getClosestFrom( this._mouse );
-    
+
     if(!closestPointInfo)
       return;
 
@@ -321,18 +328,18 @@ class CanvasCurve {
         var mustRedraw = false;
         if( this._pointHoveredIndex != -1)
           mustRedraw = true;
-          
+
         this._pointHoveredIndex = -1;
-        
+
         if(mustRedraw)
           this.draw();
-          
+
       }
 
     }
     // a point is grabbed
     else{
-      this._pointGrabbedIndex = this._pointCollection.updatePoint( this._pointGrabbedIndex, this._mouse )
+      this._pointGrabbedIndex = this.updatePoint( this._pointGrabbedIndex, this._mouse, this._controlPointRadius )
       this._pointHoveredIndex = this._pointGrabbedIndex;
     }
 
@@ -344,15 +351,8 @@ class CanvasCurve {
 
 
     // now the buffer is filled (after draw)
-    if( this._pointGrabbedIndex != -1 ){
-      var grabbedPoint = this._pointCollection.getPoint( this._pointSelectIndex );
-      this._drawCoordinates(
-        Math.round((grabbedPoint.x / this._width) * 255),
-        Math.round((grabbedPoint.y / this._height) * 255),
-        grabbedPoint
-      );
-      if(this._onEvents.movePoint)
-        this._onEvents.movePoint( this );
+    if( this._pointGrabbedIndex != -1 && this._onEvents.movePoint){
+      this._onEvents.movePoint( this );
     }
   }
 
@@ -367,13 +367,14 @@ class CanvasCurve {
 
     if( this._pointHoveredIndex != -1 ){
       //console.log("grabing a point");
-      this._pointGrabbedIndex = this._pointHoveredIndex
+      this._pointGrabbedIndex = this._pointHoveredIndex;
       this._pointSelectIndex = this._pointHoveredIndex;
     }
     else {
       var index = this.add( {x: this._mouse.x / this._width, y: this._mouse.y / this._height} );
       this._pointHoveredIndex = index;
       this._pointSelectIndex = index;
+      this._pointGrabbedIndex = index;
     }
   }
 
@@ -425,10 +426,10 @@ class CanvasCurve {
     this._mouseDown = false;
     this._pointGrabbedIndex = -1;
     this._pointHoveredIndex = -1;
-    
+
     this.draw();
     */
-    
+
     this.draw();
   }
 
@@ -476,18 +477,32 @@ class CanvasCurve {
     if("x" in pt && "y" in pt){
       pt.x *= this._width;
       pt.y *= this._height;
+      pt.value = {
+        x: Math.round(((pt.x - this._controlPointRadius) / (this._width - 2 * this._controlPointRadius)) * this._baseValue),
+        y: Math.round(((pt.y - this._controlPointRadius) / (this._height - 2 * this._controlPointRadius)) * this._baseValue),
+      };
       index = this._pointCollection.add( pt );
-      //console.log("a point is added");
     }
 
     if( draw ){
       this.draw();
     }
-    
+
     if(this._onEvents.pointAdded)
       this._onEvents.pointAdded( this );
 
     return index;
+  }
+
+  updatePoint(pointIndex, mouse, pointRadius) {
+    const newIndex = this._pointCollection.updatePoint(pointIndex, mouse, pointRadius);
+    const point = this._pointCollection.getPoint(newIndex);
+    point.value = {
+      x: Math.round(((point.x - this._controlPointRadius) / (this._width - 2 * this._controlPointRadius)) * this._baseValue),
+      y: Math.round(((point.y - this._controlPointRadius) / (this._height - 2 * this._controlPointRadius)) * this._baseValue),
+    };
+
+    return newIndex;
   }
 
 
@@ -498,7 +513,7 @@ class CanvasCurve {
   remove( index ){
     var removedPoint = this._pointCollection.remove( index );
     this.draw();
-    
+
     if(this._onEvents.pointRemoved)
       this._onEvents.pointRemoved( this );
   }
@@ -509,21 +524,19 @@ class CanvasCurve {
   */
   draw(){
     var grabbedPoint = this._pointCollection.getPoint( this._pointSelectIndex );
-    this._ctx.clearRect(0, 0, this._width, this._height);
+    this._ctx.clearRect(0, 0, this._canvas.width, this._canvas.height);
     this._fillBackground();
     this._drawGrid();
     this._drawData();
 
     if(grabbedPoint) {
       this._drawCoordinates(
-        Math.round((grabbedPoint.x / this._width) * 255),
-        Math.round((grabbedPoint.y / this._height) * 255),
         grabbedPoint
       );
     }
   }
-  
-  
+
+
   /**
   * [PRIVATE]
   * Paint the background with a given color
@@ -531,7 +544,7 @@ class CanvasCurve {
   _fillBackground(){
     if(! this._backgroundColor)
       return;
-    
+
     this._ctx.beginPath();
     this._ctx.rect(0, 0, this._width, this._height);
     this._ctx.fillStyle = this._backgroundColor;
@@ -543,11 +556,24 @@ class CanvasCurve {
   * [PRIVATE]
   * Display xy coordinates on the upper left corner
   */
-  _drawCoordinates(x, y, grabbedPoint){
+  _drawCoordinates(grabbedPoint){
     var textSize = 14 / this._screenRatio;
     this._ctx.fillStyle = this._textColor;
-    this._ctx.font = textSize + "px courier";
-    this._ctx.fillText(x + '*' + y, (grabbedPoint.x - 20) / this._screenRatio, (this._height - grabbedPoint.y + 40) / this._screenRatio);
+    this._ctx.font = textSize + "px " + this._fontFamily;
+
+    let _x = Math.max(grabbedPoint.x - 20, 0);
+    if (_x > this._width - 60) {
+      _x -= 40;
+    }
+    let _y = this._height - grabbedPoint.y + 40;
+    if (grabbedPoint.y < 40) {
+      _y -= 60;
+    }
+    this._ctx.fillText(
+      grabbedPoint.value.x + '*' + grabbedPoint.value.y,
+      _x / this._screenRatio,
+      _y / this._screenRatio
+    );
   }
 
 
@@ -596,7 +622,7 @@ class CanvasCurve {
     var ySeries = this._pointCollection.getYseries();
     var w = this._width;
     var h = this._height;
-    
+
     if(!xSeries.length)
       return;
 
@@ -616,17 +642,17 @@ class CanvasCurve {
       if(xSeries[0] > this._controlPointRadius) {
         for(var x=0; x<Math.ceil(xSeries[0]); x++){
           var y = ySeries[0]
-  
+
           // copying the inteprolated values in a buffer
           this._xSeriesInterpolated[x] = x / w;
           this._ySeriesInterpolated[x] = y / h;
-  
+
           // adjusting y for visual purpose
           y = y < 0 ? 0.5 : y > h ? h - 0.5 : y;
           this._ctx.lineTo(x/this._screenRatio, (h - y)/this._screenRatio);
         }
       }
-      
+
       // between the first and the last point
       for(var x=Math.ceil(xSeries[0]); x<Math.ceil(xSeries[ xSeries.length - 1]); x++){
         var y = splineInterpolator.interpolate(x)
@@ -654,7 +680,7 @@ class CanvasCurve {
           this._ctx.lineTo(x/this._screenRatio, (h - y)/this._screenRatio);
         }
       }
-      
+
 
       this._ctx.strokeStyle = this._pointGrabbedIndex == -1 ?  this._curveColor.idle : this._curveColor.moving;
       this._ctx.lineWidth = this._curveThickness / this._screenRatio;

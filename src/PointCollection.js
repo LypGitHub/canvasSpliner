@@ -140,11 +140,11 @@ class PointCollection {
   * @param {Object} p - point that has coord we want to use as new coord. x and y values will be copied, no pointer association
   * @return {Number} new index, the changed point may have changed its index among the x-ordered list
   */
-  updatePoint( index, p ){
+  updatePoint( index, p, pointRadius = 0){
     var newIndex = index;
 
     if(index >= 0 && index < this._points.length){
-      if(p.x >= this._min.x && p.x < this._max.x && p.y >= this._min.y && p.y < this._max.y){
+      if((p.x - pointRadius) >= this._min.x && (p.x + pointRadius) < this._max.x && (p.y - pointRadius) >= this._min.y && (p.y + pointRadius) < this._max.y){
 
         if(!this._points[index].xLocked)
           this._points[index].x = p.x;
