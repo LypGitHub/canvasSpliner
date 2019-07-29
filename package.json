@@ -15,7 +15,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rollup -c",
-    "build-min": "npm run build && printf \"// Build date: $(date '+%Y-%m-%dT%H:%M:%S')\n\n\" > dist/CanvasSpliner.min.js && cat header.txt >> dist/CanvasSpliner.min.js && google-closure-compiler-js dist/CanvasSpliner.js >> dist/CanvasSpliner.min.js",
+    "build-min": "npm run build && printf \"// Build date: $(date '+%Y-%m-%dT%H:%M:%S')\n\n\" > dist/CanvasSpliner.min.js && cat header.txt >> dist/CanvasSpliner.min.js && google-closure-compiler-js lib/canvas-curve.js >> dist/canvas-curve.min.js",
     "doc": "documentation src/CanvasSpliner.js -o ./doc/ -f html"
   },
   "devDependencies": {
