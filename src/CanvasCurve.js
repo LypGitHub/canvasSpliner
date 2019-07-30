@@ -130,10 +130,9 @@ class CanvasCurve {
     this._ctx.scale( this._screenRatio , this._screenRatio );
 
     // init the mouse and keyboard events
-    this._canvas.addEventListener('mousemove', this._onCanvasMouseMove.bind(this), false);
     this._canvas.addEventListener('mousedown', this._onCanvasMouseDown.bind(this), false);
-    //this._canvas.addEventListener('mouseup', this._onCanvasMouseUp.bind(this), false);
-    window.addEventListener('mouseup', this._onCanvasMouseUp.bind(this), false);
+    document.body.addEventListener('mousemove', this._onCanvasMouseMove.bind(this), false);
+    document.body.addEventListener('mouseup', this._onCanvasMouseUp.bind(this), false);
     this._canvas.addEventListener('dblclick', this._onCanvasMouseDbclick.bind(this), false);
     this._canvas.addEventListener('mouseleave', this._onCanvasMouseLeave.bind(this), false);
     this._canvas.addEventListener('mouseenter', this._onCanvasMouseEnter.bind(this), false);

@@ -142,6 +142,8 @@ class PointCollection {
     var newIndex = index;
 
     if(index >= 0 && index < this._points.length){
+      p.x = Math.min(Math.max(p.x, pointRadius), this._max.x - pointRadius);
+      p.y = Math.min(Math.max(p.y, pointRadius), this._max.y - pointRadius);
       if((p.x - pointRadius) >= this._min.x && (p.x + pointRadius) <= this._max.x && (p.y - pointRadius) >= this._min.y && (p.y + pointRadius) <= this._max.y){
 
         if(!this._points[index].xLocked)
