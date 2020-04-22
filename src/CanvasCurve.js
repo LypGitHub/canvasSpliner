@@ -5,7 +5,7 @@
 * Lab       MCIN - http://mcin.ca/ - Montreal Neurological Institute
 */
 
-import splines from 'splines'
+import splines from './splines'
 import { PointCollection } from './PointCollection.js'
 
 

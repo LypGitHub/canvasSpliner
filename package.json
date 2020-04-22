@@ -24,8 +24,5 @@
     "rollup": "^0.36.4",
     "rollup-plugin-commonjs": "^8.0.2",
     "rollup-plugin-node-resolve": "^2.0.0"
-  },
-  "dependencies": {
-    "splines": "jonathanlurie/splines"
   }
 }
